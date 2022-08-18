@@ -40,7 +40,7 @@ func (i *Implement) Start() error {
 		Addr:    global.Config.Http.Addr,
 		Handler: i.route,
 	}
-	return nil
+	return i.server.ListenAndServe()
 }
 
 func (i *Implement) IsAsync() bool {

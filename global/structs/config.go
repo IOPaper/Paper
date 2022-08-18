@@ -5,6 +5,7 @@ import "errors"
 type LogMethod string
 type LogLevel string
 type IndexRule string
+type StorageFormat string
 
 type ConfigChecker interface {
 	Check() error
@@ -20,10 +21,11 @@ type Config struct {
 		LogLevel  LogLevel  `toml:"log-level"`
 	} `toml:"engine"`
 	Paper struct {
-		IndexRule             IndexRule `toml:"index-rule"`
-		AllowAttachment       bool      `toml:"allow-attachment"`
-		AllowAttachmentSuffix []string  `toml:"allow-attachment-suffix"`
-		AttachmentMaxSize     int       `toml:"attachment-max-size"`
+		StorageFormat         StorageFormat `toml:"storage-format"`
+		IndexRule             IndexRule     `toml:"index-rule"`
+		AllowAttachment       bool          `toml:"allow-attachment"`
+		AllowAttachmentSuffix []string      `toml:"allow-attachment-suffix"`
+		AttachmentMaxSize     int           `toml:"attachment-max-size"`
 	} `toml:"paper"`
 }
 
@@ -61,5 +63,16 @@ func (r IndexRule) Check() error {
 		return nil
 	default:
 		return errors.New("paper.index-rule no supported")
+	}
+}
+
+// ---------------- StorageFormat ---------------- //
+
+func (f StorageFormat) Check() error {
+	switch f {
+	case "msgpack", "toml", "json":
+		return nil
+	default:
+		return errors.New("paper.storage-format no supported")
 	}
 }
