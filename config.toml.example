@@ -1,0 +1,29 @@
+# IO.Paper<core> temporarily does not provide authentication function
+
+[http]
+    addr = ":8080"
+
+[engine]
+    repository = "paper.repo/"
+    # method support
+    # file, console
+    log-method = "console"
+    # debug, release
+    log-level = "debug"
+
+[paper]
+    # rule for finding paper
+    # none | hash
+    index-rule = "hash"
+
+    # attachment storage rules follow index-rule
+    # when index-rule is hash, attachments will be stored in a central repository
+    # when index-rule is none, attachments will be stored in the same directory as the paper
+    allow-attachment = true
+    # when the first value of suffix is "*", it means that attachments with any suffix can be uploaded
+    allow-attachment-suffix = [
+        "*"
+    ]
+    # attachment max number of bytes, size unit MB
+    # -1 no limit
+    attachment-max-size = 512

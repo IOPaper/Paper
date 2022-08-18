@@ -3,6 +3,7 @@ package web
 import (
 	"context"
 	"github.com/IOPaper/Paper/boot/ctl"
+	"github.com/IOPaper/Paper/global"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"time"
@@ -19,6 +20,8 @@ func New() ctl.I {
 
 func (i *Implement) Create() error {
 
+	gin.SetMode(global.Config.Engine.LogLevel.String())
+
 	i.route = gin.Default()
 
 	_ = i.route.SetTrustedProxies(nil)
@@ -34,7 +37,7 @@ func (i *Implement) Destroy() error {
 
 func (i *Implement) Start() error {
 	i.server = &http.Server{
-		Addr:    "",
+		Addr:    global.Config.Http.Addr,
 		Handler: i.route,
 	}
 	return nil

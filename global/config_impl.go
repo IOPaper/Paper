@@ -4,6 +4,7 @@ import (
 	"errors"
 	"flag"
 	"github.com/IOPaper/Paper/boot/ctl"
+	"github.com/IOPaper/Paper/global/structs"
 	"github.com/pelletier/go-toml/v2"
 	"os"
 )
@@ -37,7 +38,20 @@ func (i *ImplementConfig) Destroy() error {
 
 func (i *ImplementConfig) Start() error {
 	defer i.cReader.Close()
-	return toml.NewDecoder(i.cReader).Decode(&Config)
+	err := toml.NewDecoder(i.cReader).Decode(&Config)
+	if err != nil {
+		return err
+	}
+	for _, option := range map[string]structs.ConfigChecker{
+		"engine.log-method": Config.Engine.LogMethod,
+		"engine.log-level":  Config.Engine.LogLevel,
+		"paper.index-rule":  Config.Paper.IndexRule,
+	} {
+		if err = option.Check(); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func (i *ImplementConfig) IsAsync() bool {
