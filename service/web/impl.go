@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/IOPaper/Paper/boot/ctl"
 	"github.com/IOPaper/Paper/global"
+	"github.com/IOPaper/Paper/service/web/core"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"time"
@@ -25,6 +26,11 @@ func (i *Implement) Create() error {
 	i.route = gin.Default()
 
 	_ = i.route.SetTrustedProxies(nil)
+
+	paper := i.route.Group("/paper")
+	{
+		paper.GET("/:index", core.GetPaper)
+	}
 
 	return nil
 }

@@ -1,6 +1,8 @@
 package structs
 
-import "errors"
+import (
+	"errors"
+)
 
 type LogMethod string
 type LogLevel string
@@ -16,16 +18,16 @@ type Config struct {
 		Addr string `toml:"addr"`
 	} `toml:"http"`
 	Engine struct {
-		Repo      string    `toml:"repo"`
+		Repo      string    `toml:"repository"`
 		LogMethod LogMethod `toml:"log-method"`
 		LogLevel  LogLevel  `toml:"log-level"`
 	} `toml:"engine"`
 	Paper struct {
-		StorageFormat         StorageFormat `toml:"storage-format"`
-		IndexRule             IndexRule     `toml:"index-rule"`
-		AllowAttachment       bool          `toml:"allow-attachment"`
-		AllowAttachmentSuffix []string      `toml:"allow-attachment-suffix"`
-		AttachmentMaxSize     int           `toml:"attachment-max-size"`
+		StorageFormat StorageFormat `toml:"storage-format"`
+		// IndexRule             IndexRule     `toml:"index-rule"`
+		AllowAttachment       bool     `toml:"allow-attachment"`
+		AllowAttachmentSuffix []string `toml:"allow-attachment-suffix"`
+		AttachmentMaxSize     int      `toml:"attachment-max-size"`
 	} `toml:"paper"`
 }
 
@@ -75,4 +77,8 @@ func (f StorageFormat) Check() error {
 	default:
 		return errors.New("paper.storage-format no supported")
 	}
+}
+
+func (f StorageFormat) String() string {
+	return (string)(f)
 }

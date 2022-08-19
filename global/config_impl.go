@@ -43,9 +43,9 @@ func (i *ImplementConfig) Start() error {
 		return err
 	}
 	for _, option := range map[string]structs.ConfigChecker{
-		"engine.log-method":    Config.Engine.LogMethod,
-		"engine.log-level":     Config.Engine.LogLevel,
-		"paper.index-rule":     Config.Paper.IndexRule,
+		"engine.log-method": Config.Engine.LogMethod,
+		"engine.log-level":  Config.Engine.LogLevel,
+		// "paper.index-rule":     Config.Paper.IndexRule,
 		"paper.storage-format": Config.Paper.StorageFormat,
 	} {
 		if err = option.Check(); err != nil {

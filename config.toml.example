@@ -14,7 +14,7 @@
 [paper]
     # rule for finding paper
     # none | hash
-    index-rule = "hash"
+    # index-rule = "hash"
 
     # attachment storage rules follow index-rule
     # when index-rule is hash, attachments will be stored in a central repository
