@@ -1,6 +1,7 @@
 package core
 
 import (
+	"os"
 	"reflect"
 	"time"
 )
@@ -25,9 +26,21 @@ type Paper struct {
 	DateModified time.Time `msgpack:"date-modified" json:"date-modified" toml:"date-modified" update:""`
 }
 
+type PaperExport struct {
+	Title        string     `json:"title"`
+	Content      string     `json:"content"`
+	Tags         []string   `json:"tags,omitempty"`
+	Attachment   []string   `json:"attachment,omitempty"`
+	Author       string     `json:"author"`
+	Sign         []byte     `json:"sign,omitempty"`
+	DateCreate   time.Time  `json:"date_create"`
+	DateModified *time.Time `json:"date_modified,omitempty"`
+}
+
 type PaperCopy Paper
 type PaperAction interface {
 	Paper() *Paper
+	Export() *PaperExport
 	Revising() PaperRevising
 }
 type PaperRevising interface {
@@ -76,7 +89,38 @@ func (p *Paper) Paper() *Paper {
 	return p
 }
 
-// ---------- PaperFunc ---------- //
+func (p *Paper) Export() *PaperExport {
+	return &PaperExport{
+		Title:      p.Title,
+		Content:    p.Content,
+		Tags:       p.Tags,
+		Attachment: p.Attachment,
+		Author:     p.Author,
+		Sign:       p.Sign,
+		DateCreate: p.DateCreated,
+		DateModified: func() *time.Time {
+			if p.DateModified.IsZero() {
+				return nil
+			}
+			return &p.DateModified
+		}(),
+	}
+}
+
+type PaperCreateFunc interface {
+	GetPaperId() int64
+	GetPaperPath() string
+	NewAttachment(name string) *os.File
+	SetContentSize(size uint)
+
+	SetTitle(title string)
+	SetContent(content string) error
+	SetTags(tag ...string)
+	SetAuthor(author string)
+
+	Close()
+	Done() error
+}
 
 type PaperFunc interface {
 	// Find Generic paper find interface
@@ -84,7 +128,9 @@ type PaperFunc interface {
 	// Write Generic Paper write interface
 	// Write(paper *Paper) error
 
-	Create(path string, paper *Paper) error
+	Create(path string) (PaperCreateFunc, error)
+
+	RecoverCreate(paperId int64, path string) (PaperCreateFunc, error)
 
 	Close() error
 }

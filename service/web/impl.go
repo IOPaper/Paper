@@ -19,6 +19,27 @@ func New() ctl.I {
 	return &Implement{}
 }
 
+func (i *Implement) Setup() {
+	{
+		paper := i.route.Group("/paper")
+		{
+			paper.GET("/:index", core.GetPaper)
+		}
+	}
+	{
+		sys := i.route.Group("/sys")
+		{
+			paper := sys.Group("/paper")
+			{
+				paper.POST("/:index/create", core.CreateNewPaper)
+				// TODO: attachment is not available
+				// paper.POST("/:index/upload_attachment")
+				paper.PUT("/:index", core.PutNewPaper)
+			}
+		}
+	}
+}
+
 func (i *Implement) Create() error {
 
 	gin.SetMode(global.Config.Engine.LogLevel.String())
@@ -27,10 +48,7 @@ func (i *Implement) Create() error {
 
 	_ = i.route.SetTrustedProxies(nil)
 
-	paper := i.route.Group("/paper")
-	{
-		paper.GET("/:index", core.GetPaper)
-	}
+	i.Setup()
 
 	return nil
 }

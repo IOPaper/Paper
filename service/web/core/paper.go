@@ -14,7 +14,7 @@ func GetPaper(c *gin.Context) {
 		}).Err(c)
 		return
 	}
-	_, err := paper.Func.Find(paperIndex)
+	paperDoc, err := paper.Func.Find(paperIndex)
 	if err != nil {
 		NewResponse(&Response{
 			Code: 400,
@@ -22,5 +22,8 @@ func GetPaper(c *gin.Context) {
 		}).Err(c)
 		return
 	}
-
+	NewResponse(&Response{
+		Code: 200,
+		Data: paperDoc.Export(),
+	}).Ok(c)
 }

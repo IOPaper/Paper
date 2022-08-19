@@ -1,8 +1,6 @@
 package main
 
-import (
-	"github.com/IOPaper/Paper/boot"
-)
+import "github.com/IOPaper/Paper/boot"
 
 func main() {
 
