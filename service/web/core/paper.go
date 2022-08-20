@@ -8,18 +8,25 @@ import (
 
 func GetPaperList(c *gin.Context) {
 	var (
+		b             = c.Query("before")
+		l             = c.Query("limit")
 		before, limit int
 		err           error
 	)
-	if before, err = strconv.Atoi(c.Query("before")); err != nil {
-		NewResponse(&Response{Code: 400, Msg: "invalid request param"}).Err(c)
-		return
+	if b != "" || l != "" {
+		if before, err = strconv.Atoi(b); err != nil {
+			NewResponse(&Response{Code: 400, Msg: "invalid request param"}).Err(c)
+			return
+		}
+		if limit, err = strconv.Atoi(l); err != nil {
+			NewResponse(&Response{Code: 400, Msg: "invalid request param"}).Err(c)
+			return
+		}
+	} else {
+		before = 0
+		limit = 10
 	}
-	if limit, err = strconv.Atoi(c.Query("limit")); err != nil {
-		NewResponse(&Response{Code: 400, Msg: "invalid request param"}).Err(c)
-		return
-	}
-	if before < 0 || limit <= 0 || limit > 10 {
+	if before < 0 || limit <= 0 {
 		NewResponse(&Response{Code: 400, Msg: "invalid request param"}).Err(c)
 		return
 	}

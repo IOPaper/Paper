@@ -154,8 +154,15 @@ func (i *PapersIndex) List(before, limit int) (PaperMemIndexValues, error) {
 	if size < before {
 		return nil, errors.New("before is too large")
 	}
-	if size < before+limit || limit > 10 {
+
+	if limit > 10 {
 		return nil, errors.New("limit is too large")
+	}
+	if size < before+limit {
+		limit = size - before
+		if limit > 10 {
+			limit = 10
+		}
 	}
 	return i.Docs[before : limit+before], nil
 }
