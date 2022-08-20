@@ -5,6 +5,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"errors"
+	"fmt"
 	"github.com/IOPaper/Paper/paper/core"
 	"github.com/IOPaper/Paper/utils"
 	"github.com/vmihailenco/msgpack/v5"
@@ -23,6 +24,7 @@ type PapersIndexMapping interface {
 type PaperMemIndexKey string
 type PaperMemIndexValue string
 type PapersMemIndex map[PaperMemIndexKey]PaperMemIndexValue
+type PaperMemIndexValues []string
 
 type PapersIndex struct {
 	dir         string
@@ -134,7 +136,7 @@ func (i *PapersIndex) Exist(path string) bool {
 	if ok {
 		return true
 	}
-	_, ok = i.mapping.Get(path)
+	_, ok = i.Find(path)
 	return ok
 }
 
@@ -145,6 +147,17 @@ func (i *PapersIndex) Mapping() PapersIndexMapping {
 func (i *PapersIndex) Find(path string) (PaperMemIndexValue, bool) {
 	s := sha256.Sum256([]byte(path))
 	return i.mapping.Get(hex.EncodeToString(s[:]))
+}
+
+func (i *PapersIndex) List(before, limit int) (PaperMemIndexValues, error) {
+	size := len(i.Docs)
+	if size < before {
+		return nil, errors.New("before is too large")
+	}
+	if size < before+limit || limit > 10 {
+		return nil, errors.New("limit is too large")
+	}
+	return i.Docs[before : limit+before], nil
 }
 
 // ---------- PapersMemIndex ---------- //
@@ -217,11 +230,33 @@ func (d *PaperIndexDoc) Value() string /*(string, error)*/ {
 }
 
 func (d *PaperIndexDoc) Open() (*core.Paper, error) {
-	f, err := os.Open(d.dir + d.Path + "/" + PaperDocName)
+	f, err := os.Open(fmt.Sprintf("%s%s/%s", d.dir, d.Path, PaperDocName))
 	if err != nil {
 		return nil, err
 	}
 	defer f.Close()
 	p := core.Paper{}
 	return &p, NewPaperDecode(f).Decode(&p)
+}
+
+// ---------- PaperMemIndexValues ---------- //
+
+func (v *PaperMemIndexValues) Open(dir string) ([]core.Paper, error) {
+	var (
+		f      *os.File
+		err    error
+		p      core.Paper
+		papers = make([]core.Paper, len(*v))
+	)
+	for i, doc := range *v {
+		if f, err = os.Open(fmt.Sprintf("%s%s/%s", dir, doc, PaperDocName)); err != nil {
+			return nil, err
+		}
+		if err = NewPaperDecode(f).Decode(&p); err != nil {
+			return nil, err
+		}
+		f.Close()
+		papers[i] = p
+	}
+	return papers, nil
 }

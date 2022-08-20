@@ -70,3 +70,7 @@ func PutNewPaper(c *gin.Context) {
 	}
 	NewResponse(&Response{Code: 201}).Ok(c)
 }
+
+func PutAttachment(c *gin.Context) {
+
+}

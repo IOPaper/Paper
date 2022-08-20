@@ -8,6 +8,7 @@ import (
 	"os"
 	"sync"
 	"time"
+	"unicode/utf8"
 )
 
 type PaperCache struct {
@@ -44,7 +45,7 @@ func (c *PaperCache) SetTitle(title string) {
 }
 
 func (c *PaperCache) SetContent(content string) error {
-	if c.contentSize != uint(len(content)) {
+	if c.contentSize != uint(utf8.RuneCountInString(content)) {
 		return errors.New("invalid content size")
 	}
 	c.paper.Content = content

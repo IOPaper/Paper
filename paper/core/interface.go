@@ -38,16 +38,20 @@ type PaperExport struct {
 }
 
 type PaperCopy Paper
+type Papers []Paper
 type PaperAction interface {
 	Paper() *Paper
 	Export() *PaperExport
 	Revising() PaperRevising
 }
+type PaperBatchAction interface {
+	Export() []PaperExport
+}
 type PaperRevising interface {
 	CompareDiff(paper *Paper) error
 }
 
-// ---------- Paper ---------- //
+// ---------- PaperCopy ---------- //
 
 func (c *PaperCopy) CompareDiff(paper *Paper) error {
 	typeof := reflect.TypeOf(*paper)
@@ -107,6 +111,31 @@ func (p *Paper) Export() *PaperExport {
 	}
 }
 
+// ---------- Papers ---------- //
+
+func (p Papers) Export() []PaperExport {
+	size := len(p)
+	vv := make([]PaperExport, size)
+	for i := 0; i < size; i++ {
+		vv[i] = PaperExport{
+			Title:      p[i].Title,
+			Content:    p[i].Content,
+			Tags:       p[i].Tags,
+			Attachment: p[i].Attachment,
+			Author:     p[i].Author,
+			Sign:       p[i].Sign,
+			DateCreate: p[i].DateCreated,
+			DateModified: func() *time.Time {
+				if p[i].DateModified.IsZero() {
+					return nil
+				}
+				return &p[i].DateModified
+			}(),
+		}
+	}
+	return vv
+}
+
 type PaperCreateFunc interface {
 	GetPaperId() int64
 	GetPaperPath() string
@@ -131,6 +160,8 @@ type PaperFunc interface {
 	Create(path string) (PaperCreateFunc, error)
 
 	RecoverCreate(paperId int64, path string) (PaperCreateFunc, error)
+
+	List(before, limit uint) (PaperBatchAction, error)
 
 	Close() error
 }

@@ -20,22 +20,21 @@ func New() ctl.I {
 }
 
 func (i *Implement) Setup() {
+	paper := i.route.Group("/paper")
 	{
-		paper := i.route.Group("/paper")
+		paper.GET("/list", core.GetPaperList)
+
+		deep := paper.Group("/x/:index")
 		{
-			paper.GET("/:index", core.GetPaper)
-		}
-	}
-	{
-		sys := i.route.Group("/sys")
-		{
-			paper := sys.Group("/paper")
-			{
-				paper.POST("/:index/create", core.CreateNewPaper)
-				// TODO: attachment is not available
-				// paper.POST("/:index/upload_attachment")
-				paper.PUT("/:index", core.PutNewPaper)
-			}
+			deep.GET("/", core.GetPaper)
+			// TODO wait implement
+			deep.GET("/:attachment", core.GetPaperAttachment)
+
+			deep.POST("/", core.CreateNewPaper)
+
+			deep.PUT("/", core.PutNewPaper)
+			// TODO wait implement
+			deep.PUT("/:attachment", core.PutAttachment)
 		}
 	}
 }

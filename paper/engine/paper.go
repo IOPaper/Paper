@@ -80,6 +80,18 @@ func (p *Paper) RecoverCreate(paperId int64, path string) (core.PaperCreateFunc,
 	return pp, nil
 }
 
+func (p *Paper) List(before, limit uint) (core.PaperBatchAction, error) {
+	list, err := p.Index.List(int(before), int(limit))
+	if err != nil {
+		return nil, err
+	}
+	papers, err := list.Open(p.dataDir)
+	if err != nil {
+		return nil, err
+	}
+	return (*core.Papers)(&papers), nil
+}
+
 func (p *Paper) Close() error {
 	// save memory mapping
 	err := p.Index.Write()
