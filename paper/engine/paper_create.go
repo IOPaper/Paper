@@ -5,6 +5,7 @@ import (
 	"github.com/IOPaper/Paper/paper/core"
 	"github.com/IOPaper/Paper/paper/paperId"
 	"github.com/IOPaper/Paper/utils"
+	"log"
 	"os"
 	"sync"
 	"time"
@@ -45,6 +46,7 @@ func (c *PaperCache) SetTitle(title string) {
 }
 
 func (c *PaperCache) SetContent(content string) error {
+	log.Println(uint(utf8.RuneCountInString(content)))
 	if c.contentSize != uint(utf8.RuneCountInString(content)) {
 		return errors.New("invalid content size")
 	}

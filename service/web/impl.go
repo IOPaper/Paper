@@ -24,7 +24,7 @@ func (i *Implement) Setup() {
 	{
 		paper.GET("/list", core.GetPaperList)
 
-		deep := paper.Group("/x/:index")
+		deep := paper.Group("/:index")
 		{
 			deep.GET("/", core.GetPaper)
 			// TODO wait implement

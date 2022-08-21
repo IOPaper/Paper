@@ -27,7 +27,7 @@ type Paper struct {
 }
 
 type PaperExport struct {
-	Id           string     `json:"paper_id"`
+	Id           string     `json:"paper_id,omitempty"`
 	Title        string     `json:"title"`
 	Content      string     `json:"content"`
 	Tags         []string   `json:"tags,omitempty"`

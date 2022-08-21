@@ -251,7 +251,6 @@ func (v *PaperMemIndexValues) Open(dir string) (*core.Papers, error) {
 	var (
 		f    *os.File
 		err  error
-		p    core.Paper
 		size = len(*v)
 		// papers = make([]core.Paper, len(*v))
 		papers = &core.Papers{
@@ -263,6 +262,7 @@ func (v *PaperMemIndexValues) Open(dir string) (*core.Papers, error) {
 		if f, err = os.Open(fmt.Sprintf("%s%s/%s", dir, doc, PaperDocName)); err != nil {
 			return nil, err
 		}
+		p := core.Paper{}
 		if err = NewPaperDecode(f).Decode(&p); err != nil {
 			return nil, err
 		}
