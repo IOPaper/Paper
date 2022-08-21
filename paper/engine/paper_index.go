@@ -150,12 +150,19 @@ func (i *PapersIndex) Find(path string) (PaperMemIndexValue, bool) {
 	return i.mapping.Get(hex.EncodeToString(s[:]))
 }
 
+func (i *PapersIndex) reverseDocs() {
+	for x, j := 0, len(i.Docs)-1; x < j; x, j = x+1, j-1 {
+		i.Docs[x], i.Docs[j] = i.Docs[j], i.Docs[x]
+	}
+}
+
 func (i *PapersIndex) List(before, limit int) (PaperMemIndexValues, error) {
+	//i.reverseDocs()
+	//defer i.reverseDocs()
 	size := len(i.Docs)
 	if size < before {
 		return nil, errors.New("before is too large")
 	}
-
 	if limit > DefaultPaperExportLimit {
 		return nil, errors.New("limit is too large")
 	}
@@ -165,6 +172,13 @@ func (i *PapersIndex) List(before, limit int) (PaperMemIndexValues, error) {
 			limit = 10
 		}
 	}
+	//// TODO k1
+	//cp := i.Docs[before : limit+before]
+	//size = len(cp)
+	//cc := make(PaperMemIndexValues, size)
+	//for j := 0; j < size; j++ {
+	//	cc[j] = cp[size-j-1]
+	//}
 	return i.Docs[before : limit+before], nil
 }
 

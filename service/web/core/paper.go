@@ -8,8 +8,9 @@ import (
 
 func GetPaperList(c *gin.Context) {
 	var (
-		b             = c.Query("before")
-		l             = c.Query("limit")
+		b = c.Query("before")
+		l = c.Query("limit")
+		// order         = c.Query("order")
 		before, limit int
 		err           error
 	)
