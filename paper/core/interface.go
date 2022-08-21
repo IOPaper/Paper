@@ -27,6 +27,7 @@ type Paper struct {
 }
 
 type PaperExport struct {
+	Id           string     `json:"paper_id"`
 	Title        string     `json:"title"`
 	Content      string     `json:"content"`
 	Tags         []string   `json:"tags,omitempty"`
@@ -37,8 +38,12 @@ type PaperExport struct {
 	DateModified *time.Time `json:"date_modified,omitempty"`
 }
 
+type Papers struct {
+	Ids    []string
+	Papers []Paper
+}
+
 type PaperCopy Paper
-type Papers []Paper
 type PaperAction interface {
 	Paper() *Paper
 	Export() *PaperExport
@@ -114,22 +119,23 @@ func (p *Paper) Export() *PaperExport {
 // ---------- Papers ---------- //
 
 func (p Papers) Export() []PaperExport {
-	size := len(p)
+	size := len(p.Papers)
 	vv := make([]PaperExport, size)
 	for i := 0; i < size; i++ {
 		vv[i] = PaperExport{
-			Title:      p[i].Title,
-			Content:    p[i].Content,
-			Tags:       p[i].Tags,
-			Attachment: p[i].Attachment,
-			Author:     p[i].Author,
-			Sign:       p[i].Sign,
-			DateCreate: p[i].DateCreated,
+			Id:         p.Ids[i],
+			Title:      p.Papers[i].Title,
+			Content:    p.Papers[i].Content,
+			Tags:       p.Papers[i].Tags,
+			Attachment: p.Papers[i].Attachment,
+			Author:     p.Papers[i].Author,
+			Sign:       p.Papers[i].Sign,
+			DateCreate: p.Papers[i].DateCreated,
 			DateModified: func() *time.Time {
-				if p[i].DateModified.IsZero() {
+				if p.Papers[i].DateModified.IsZero() {
 					return nil
 				}
-				return &p[i].DateModified
+				return &p.Papers[i].DateModified
 			}(),
 		}
 	}

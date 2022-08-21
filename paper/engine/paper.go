@@ -89,7 +89,7 @@ func (p *Paper) List(before, limit uint) (core.PaperBatchAction, error) {
 	if err != nil {
 		return nil, err
 	}
-	return (*core.Papers)(&papers), nil
+	return papers, nil
 }
 
 func (p *Paper) Close() error {

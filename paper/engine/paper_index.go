@@ -13,6 +13,7 @@ import (
 )
 
 const PapersIndexName string = "paper_index"
+const DefaultPaperExportLimit = 10
 
 type PapersIndexMapping interface {
 	Put(key, value string)
@@ -155,7 +156,7 @@ func (i *PapersIndex) List(before, limit int) (PaperMemIndexValues, error) {
 		return nil, errors.New("before is too large")
 	}
 
-	if limit > 10 {
+	if limit > DefaultPaperExportLimit {
 		return nil, errors.New("limit is too large")
 	}
 	if size < before+limit {
@@ -194,8 +195,6 @@ func (i PapersMemIndex) Range(f func(k PaperMemIndexKey, v PaperMemIndexValue) e
 
 // ---------- PaperMemIndexValue ---------- //
 
-// Doc
-// 获取paper索引信息
 func (v PaperMemIndexValue) Doc(dir string) *PaperIndexDoc {
 	//f, err := os.Open(dir + string(v))
 	//if err != nil {
@@ -248,12 +247,17 @@ func (d *PaperIndexDoc) Open() (*core.Paper, error) {
 
 // ---------- PaperMemIndexValues ---------- //
 
-func (v *PaperMemIndexValues) Open(dir string) ([]core.Paper, error) {
+func (v *PaperMemIndexValues) Open(dir string) (*core.Papers, error) {
 	var (
-		f      *os.File
-		err    error
-		p      core.Paper
-		papers = make([]core.Paper, len(*v))
+		f    *os.File
+		err  error
+		p    core.Paper
+		size = len(*v)
+		// papers = make([]core.Paper, len(*v))
+		papers = &core.Papers{
+			Ids:    make([]string, size),
+			Papers: make([]core.Paper, size),
+		}
 	)
 	for i, doc := range *v {
 		if f, err = os.Open(fmt.Sprintf("%s%s/%s", dir, doc, PaperDocName)); err != nil {
@@ -263,7 +267,8 @@ func (v *PaperMemIndexValues) Open(dir string) ([]core.Paper, error) {
 			return nil, err
 		}
 		f.Close()
-		papers[i] = p
+		papers.Ids[i] = doc
+		papers.Papers[i] = p
 	}
 	return papers, nil
 }
