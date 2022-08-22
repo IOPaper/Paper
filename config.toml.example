@@ -11,6 +11,8 @@
     # debug, release
     log-level = "debug"
 
+    auth-token = ""
+
 [paper]
     # rule for finding paper
     # none | hash

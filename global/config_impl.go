@@ -21,7 +21,7 @@ func NewConfig() ctl.I {
 }
 
 func (i *ImplementConfig) Create() (err error) {
-	flag.StringVar(&i.args.path, "config", "", "config file path")
+	flag.StringVar(&i.args.path, "config", "config.toml", "config file path")
 	flag.Parse()
 	if i.args.path == "" {
 		return errors.New("config path is empty")

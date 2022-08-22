@@ -1,3 +1,70 @@
 # IO.Paper core
 
-## API Doc
+## RESTFul API Doc
+
+#### Generic Response Structure
+##### response example
+```json5
+{
+  "status": true,
+  "msg": "msg is nullable field",
+  "data": {
+    "msg": "data is nullable field"
+  }
+}
+```
+##### response field type
+ - `status<bool>`
+ - `msg<string, nullable>`
+ - `data<any, nullable>`
+
+_as a `data` field with `any` type, its role is to carry unknown data_
+
+-------
+
+### GetPaperList
+
+**method:** `GET`
+
+**path:** `/paper/list`
+
+**query options:**
+ - `before<int, nullable>`
+ - `limit<int, max:10, nullable>`
+
+**success response**
+ - `status<bool>`
+ - `data<Array<PaperExport>>`
+ - PaperExport
+    - `paper_id<string>`
+    - `title<string>`
+    - `content<string>`
+    - `tags<Array<string>, nullable>`
+    - `attachment<Array<string>, nullable>`
+    - `author<string>`
+    - `sign<string[base64], nullable>`
+    - `date_create<date>`
+    - `date_modified<date, nullable>`
+
+**error response**
+ - `status<bool>`
+ - `msg<string>`
+
+-------
+
+### GetPaper
+
+**method:** `GET`
+
+**path:** `/paper/:paper_id`
+
+**url param**
+ - `paper_id<string>`
+
+**success response**
+ - `status<bool>`
+ - `data<PaperExport>`
+
+**error response**
+ - `status<bool>`
+ - `msg<string>`

@@ -5,6 +5,7 @@ import (
 	"github.com/IOPaper/Paper/boot/ctl"
 	"github.com/IOPaper/Paper/global"
 	"github.com/IOPaper/Paper/service/web/core"
+	"github.com/IOPaper/Paper/service/web/module"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"time"
@@ -19,7 +20,7 @@ func New() ctl.I {
 	return &Implement{}
 }
 
-func (i *Implement) Setup() {
+func (i *Implement) SetupRoute() {
 	paper := i.route.Group("/paper")
 	{
 		paper.GET("/list", core.GetPaperList)
@@ -47,7 +48,9 @@ func (i *Implement) Create() error {
 
 	_ = i.route.SetTrustedProxies(nil)
 
-	i.Setup()
+	module.Setup(i.route)
+
+	i.SetupRoute()
 
 	return nil
 }

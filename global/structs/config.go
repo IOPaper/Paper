@@ -21,6 +21,7 @@ type Config struct {
 		Repo      string    `toml:"repository"`
 		LogMethod LogMethod `toml:"log-method"`
 		LogLevel  LogLevel  `toml:"log-level"`
+		AuthToken string    `toml:"auth-token"`
 	} `toml:"engine"`
 	Paper struct {
 		StorageFormat StorageFormat `toml:"storage-format"`
