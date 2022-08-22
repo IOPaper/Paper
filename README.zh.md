@@ -10,13 +10,13 @@
 </p>
 
 <p align="left">
-    <a href="README.zh.md">简体中文</a>
+    <a href="README.md">English</a>
 </p>
 
-## RESTFul API Doc
+## RESTFul 接口文档
 
-#### Generic Response Structure
-##### response example
+#### 通用响应结构
+##### 响应示例
 ```json5
 {
   "status": true,
@@ -26,12 +26,12 @@
   }
 }
 ```
-##### response field type
- - `status<bool>`
- - `msg<string, nullable>`
- - `data<any, nullable>`
+##### 响应字段类型
+- `status<bool>`
+- `msg<string, nullable>`
+- `data<any, nullable>`
 
-_as a `data` field with `any` type, its role is to carry unknown data_
+_作为`any`类型的`data`字段，其作用是携带未知数据_
 
 -------
 
@@ -42,13 +42,13 @@ _as a `data` field with `any` type, its role is to carry unknown data_
 **path:** `/paper/list`
 
 **query options:**
- - `before<int, nullable>`
- - `limit<int, max:10, nullable>`
+- `before<int, nullable>`
+- `limit<int, max:10, nullable>`
 
-**success response**
- - `status<bool>`
- - `data<Array<PaperExport>>`
- - PaperExport
+**成功响应**
+- `status<bool>`
+- `data<Array<PaperExport>>`
+- PaperExport
     - `paper_id<string>`
     - `title<string>`
     - `content<string>`
@@ -59,9 +59,9 @@ _as a `data` field with `any` type, its role is to carry unknown data_
     - `date_create<date>`
     - `date_modified<date, nullable>`
 
-**error response**
- - `status<bool>`
- - `msg<string>`
+**错误响应**
+- `status<bool>`
+- `msg<string>`
 
 -------
 
@@ -72,12 +72,12 @@ _as a `data` field with `any` type, its role is to carry unknown data_
 **path:** `/paper/:paper_id`
 
 **url param**
- - `paper_id<string>`
+- `paper_id<string>`
 
-**success response**
- - `status<bool>`
- - `data<PaperExport>`
+**成功响应**
+- `status<bool>`
+- `data<PaperExport>`
 
-**error response**
- - `status<bool>`
- - `msg<string>`
+**错误响应**
+- `status<bool>`
+- `msg<string>`

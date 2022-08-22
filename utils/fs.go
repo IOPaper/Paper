@@ -51,6 +51,9 @@ func Write(path string, buf *bytes.Buffer, covered bool) error {
 		Remove(path)
 	}
 	f, err := Open(path)
+	if err != nil {
+		return err
+	}
 	defer f.Close()
 	n, _ := f.Seek(0, 2)
 	_, err = f.WriteAt(buf.Bytes(), n)
