@@ -81,3 +81,7 @@ _as a `data` field with `any` type, its role is to carry unknown data_
 **error response**
  - `status<bool>`
  - `msg<string>`
+ 
+ ## Roadmap
+  - **Support for paper encryption**
+  - **Support for blockchain storage**
