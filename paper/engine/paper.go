@@ -92,6 +92,10 @@ func (p *Paper) List(before, limit uint) (core.PaperBatchAction, error) {
 	return papers, nil
 }
 
+func (p *Paper) GetAttachmentFullPath(paperId, attachmentId string) string {
+	return fmt.Sprintf("%s/%s/%s", p.dataDir, paperId, attachmentId)
+}
+
 func (p *Paper) Close() error {
 	// save memory mapping
 	err := p.Index.Write()

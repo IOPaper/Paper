@@ -69,5 +69,29 @@ func GetPaper(c *gin.Context) {
 }
 
 func GetPaperAttachment(c *gin.Context) {
-
+	paperIndex := c.Param("index")
+	attachment := c.Param("attachment")
+	if paperIndex == "" || attachment == "" {
+		NewResponse(&Response{
+			Code: 400,
+			Msg:  "request param empty",
+		}).Err(c)
+		return
+	}
+	paperDoc, err := paper.Func.Find(paperIndex)
+	if err != nil {
+		NewResponse(&Response{
+			Code: 400,
+			Msg:  err.Error(),
+		}).Err(c)
+		return
+	}
+	if err = paperDoc.LookupAttachment(attachment); err != nil {
+		NewResponse(&Response{
+			Code: 400,
+			Msg:  err.Error(),
+		}).Err(c)
+		return
+	}
+	c.File(paper.Func.GetAttachmentFullPath(paperIndex, attachment))
 }

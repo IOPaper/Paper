@@ -1,6 +1,7 @@
 package core
 
 import (
+	"errors"
 	"os"
 	"reflect"
 	"time"
@@ -48,6 +49,7 @@ type PaperAction interface {
 	Paper() *Paper
 	Export() *PaperExport
 	Revising() PaperRevising
+	LookupAttachment(attachmentId string) error
 }
 type PaperBatchAction interface {
 	Export() []PaperExport
@@ -116,6 +118,19 @@ func (p *Paper) Export() *PaperExport {
 	}
 }
 
+func (p *Paper) LookupAttachment(attachmentId string) error {
+	size := len(p.Attachment)
+	if size == 0 {
+		return errors.New("attachment not found")
+	}
+	for i := 0; i < size; i++ {
+		if p.Attachment[i] == attachmentId {
+			return nil
+		}
+	}
+	return errors.New("attachment not found")
+}
+
 // ---------- Papers ---------- //
 
 func (p Papers) Export() []PaperExport {
@@ -168,6 +183,8 @@ type PaperFunc interface {
 	RecoverCreate(paperId int64, path string) (PaperCreateFunc, error)
 
 	List(before, limit uint) (PaperBatchAction, error)
+
+	GetAttachmentFullPath(paperId, attachmentId string) string
 
 	Close() error
 }
