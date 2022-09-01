@@ -13,10 +13,10 @@
     <a href="README.zh.md">简体中文</a>
 </p>
 
-## RESTFul API Doc
+## 📝RESTFul API Doc
 
-#### Generic Response Structure
-##### response example
+#### 😎Generic Response Structure
+##### response example💨💨
 ```json5
 {
   "status": true,
@@ -81,3 +81,7 @@ _as a `data` field with `any` type, its role is to carry unknown data_
 **error response**
  - `status<bool>`
  - `msg<string>`
+ 
+ ## 🗺️Roadmap
+  - **Support for paper encryption**
+  - **Support for blockchain storage**
