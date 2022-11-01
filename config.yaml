@@ -1,0 +1,8 @@
+http:
+    addr: "127.0.0.1:8080"
+    log-level: "debug"
+
+paper-engine:
+    engine: "fs"
+    fs:
+        repo: "paper/"
