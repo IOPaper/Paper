@@ -16,6 +16,16 @@ type Http struct {
 	LogLevel HttpLogLevel `yaml:"log-level"`
 }
 
+type SecuritySecp256k1 struct {
+	PublicKey  string `yaml:"public"`
+	PrivateKey string `yaml:"private"`
+}
+
+type Security struct {
+	Secret    string            `yaml:"secret"`
+	Secp256k1 SecuritySecp256k1 `yaml:"secp256k1"`
+}
+
 type PaperEngineFs struct {
 	Repo string `yaml:"repo"`
 }
@@ -27,6 +37,7 @@ type PaperEngine struct {
 
 type Config struct {
 	Http        `yaml:"http"`
+	Security    `yaml:"security"`
 	PaperEngine `yaml:"paper-engine"`
 }
 
