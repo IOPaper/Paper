@@ -43,7 +43,7 @@ func (r *Encoding[T]) JSONPipe(w io.Writer) {
 	jsoniter.ConfigFastest.NewEncoder(w).Encode(r.result)
 }
 
-func NewResult[T any]() Setter[T] {
+func New[T any]() Setter[T] {
 	return &Result[T]{statusCode: http.StatusOK}
 }
 

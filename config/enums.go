@@ -20,6 +20,10 @@ func (l HttpLogLevel) Check() bool {
 	}
 }
 
+func (l HttpLogLevel) String() string {
+	return string(l)
+}
+
 func (t PaperEngineType) Check() bool {
 	switch t {
 	case PaperEngineTypeFs, PaperEngineTypeSQLite:
