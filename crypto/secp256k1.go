@@ -8,6 +8,7 @@ import (
 	"github.com/pkg/errors"
 	"io"
 	"math/big"
+	"os"
 )
 
 type EcdsaKeypair struct {
@@ -24,6 +25,14 @@ func LoadSecp256k1(priKey []byte) (*EcdsaKeypair, error) {
 		PrivateKey: pri,
 		PublicKey:  &pri.PublicKey,
 	}, nil
+}
+
+func LoadSecp256k1FromPath(priKey string) (*EcdsaKeypair, error) {
+	pri, err := os.ReadFile(priKey)
+	if err != nil {
+		return nil, errors.Wrap(err, "can't load secp256k1 private key")
+	}
+	return LoadSecp256k1(pri)
 }
 
 func NewSecp256k1() (*EcdsaKeypair, error) {

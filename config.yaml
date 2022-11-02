@@ -5,8 +5,8 @@ http:
 security:
     secret: "YOUR_SECRET"
     secp256k1:
-        public: "./pubKey"
-        private: "./priKey"
+        public: "./pubkey"
+        private: "./prikey"
 
 paper-engine:
     engine: "fs"

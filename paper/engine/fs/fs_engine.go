@@ -34,7 +34,7 @@ func (e *Engine) Type() string {
 }
 
 func (e *Engine) GetOnePaper(index string) (*engine.Paper, error) {
-	fiApi, err := e.OpenWithDocIndex(index)
+	fiApi, err := e.OpenPaperWithIndex(index)
 	if err != nil {
 		return nil, err
 	}
@@ -55,7 +55,7 @@ func (e *Engine) GetPaperList(before, limit int) (*engine.PaperList, error) {
 		Papers: make([]engine.PaperStore, len(indexs)),
 	}
 	for key, index := range indexs {
-		docs, er := e.OpenWithDocIndex(index)
+		docs, er := e.OpenPaperWithIndex(index)
 		if er != nil {
 			return nil, er
 		}
@@ -69,4 +69,9 @@ func (e *Engine) GetPaperList(before, limit int) (*engine.PaperList, error) {
 		}
 	}
 	return &list, nil
+}
+
+func (e *Engine) AddOnePaper(index string, paperDTO *engine.PaperDTO) error {
+
+	return nil
 }

@@ -23,7 +23,9 @@ type FileApi interface {
 	OpenIndex
 
 	Init() error
-	OpenWithDocIndex(index string) (FileIndexApi, error)
+
+	CheckPaperIndexStatus(index string) bool
+	OpenPaperWithIndex(index string) (FileIndexApi, error)
 
 	GetAttachmentPath(key string) (string, error)
 	GetAttachment(key string) (io.Reader, error)
@@ -86,8 +88,12 @@ func (f *fileApi) OpenIndex() (*PaperIndex, error) {
 	return &pl, nil
 }
 
-// OpenWithDocIndex [RAW API]
-func (f *fileApi) OpenWithDocIndex(index string) (FileIndexApi, error) {
+func (f *fileApi) CheckPaperIndexStatus(index string) bool {
+	return utils.IsExist(f.withRootPath(DOCRepo + index))
+}
+
+// OpenPaperWithIndex [RAW API]
+func (f *fileApi) OpenPaperWithIndex(index string) (FileIndexApi, error) {
 	indexPath := f.withRootPath(DOCRepo + index)
 	if !utils.IsExist(indexPath) {
 		return nil, errors.Errorf("index %s not found", indexPath)
