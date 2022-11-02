@@ -2,6 +2,12 @@ http:
     addr: "127.0.0.1:8080"
     log-level: "debug"
 
+security:
+    secret: "YOUR_SECRET"
+    secp256k1:
+        public: "./pubkey"
+        private: "./prikey"
+
 paper-engine:
     engine: "fs"
     fs:

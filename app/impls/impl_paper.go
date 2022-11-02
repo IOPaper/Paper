@@ -9,6 +9,7 @@ import (
 
 type Paper interface {
 	GetList(c *gin.Context)
+	GetPaperIndexStatus(c *gin.Context)
 	GetPaper(c *gin.Context)
 	GetAttachment(c *gin.Context)
 }
@@ -58,6 +59,21 @@ func (p *paperImpl) GetList(c *gin.Context) {
 		Ok(c.Writer)
 }
 
+func (p *paperImpl) GetPaperIndexStatus(c *gin.Context) {
+	paperName := c.Param("index")
+	if paperName == "" {
+		result.New[any]().SetStatusCode(400).SetMessage("invalid request param").Err(c.Writer)
+		return
+	}
+	result.New[gin.H]().
+		SetStatusCode(200).
+		SetMessage("ok").
+		SetData(gin.H{
+			"status": p.CheckPaperIndexStatus(paperName),
+		}).
+		Ok(c.Writer)
+}
+
 func (p *paperImpl) GetPaper(c *gin.Context) {
 	paperName := c.Param("index")
 	if paperName == "" {
@@ -93,7 +109,7 @@ func (p *paperImpl) GetAttachment(c *gin.Context) {
 		return
 	}
 	for _, index := range doc.Attachment {
-		if index == attachment {
+		if index.Hash == attachment {
 			path, er := p.GetAttachmentPath(attachment)
 			if er != nil {
 				result.New[gin.H]().SetStatusCode(503).SetMessage("can't get this attachment").SetData(gin.H{

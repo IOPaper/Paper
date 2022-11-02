@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/IOPaper/Paper/app/impls"
 	"github.com/IOPaper/Paper/config"
+	"github.com/IOPaper/Paper/crypto"
 	"github.com/IOPaper/Paper/paper"
 	pkgCtl "github.com/RealFax/pkg-ctl"
 	"github.com/gin-gonic/gin"
@@ -21,10 +22,20 @@ func NewService(ctx *context.Context) pkgCtl.Handler {
 	return &Implement{ctx: *ctx}
 }
 
-func (i *Implement) SetupRoute() error {
-	engine, err := paper.New(i.ctx)
+func (i *Implement) SetupRoute(conf *config.Config) error {
+	engine, err := paper.New(i.ctx, conf)
 	if err != nil {
 		return err
+	}
+	keypair, err := crypto.LoadSecp256k1FromPath(conf.Security.Secp256k1.PrivateKey)
+	if err != nil {
+		return err
+	}
+
+	rPublic := i.route.Group("/public")
+	{
+		implKeys := impls.NewImplKeys(keypair)
+		rPublic.GET("/key", implKeys.Public)
 	}
 
 	rPaper := i.route.Group("/x")
@@ -35,10 +46,18 @@ func (i *Implement) SetupRoute() error {
 
 		rDeep := rPaper.Group("/:index")
 		{
-			rDeep.GET("/:attachment", implPaper.GetAttachment)
+			rDeep.GET("/file/:attachment", implPaper.GetAttachment)
 			rDeep.GET("/", implPaper.GetPaper)
+			rDeep.GET("/status", implPaper.GetPaperIndexStatus)
 		}
 	}
+
+	rAdmin := i.route.Group("/m")
+	{
+		implWriting := impls.NewImplWriting(engine, keypair, conf.Security.Secret)
+		rAdmin.POST("/add_paper", implWriting.AddPaper)
+	}
+
 	return nil
 }
 
@@ -50,8 +69,7 @@ func (i *Implement) Create() error {
 	}
 
 	i.serve = &http.Server{
-		Addr:    conf.Http.Addr,
-		Handler: i.route,
+		Addr: conf.Http.Addr,
 	}
 
 	gin.SetMode(conf.Http.LogLevel.String())
@@ -60,10 +78,11 @@ func (i *Implement) Create() error {
 
 	_ = i.route.SetTrustedProxies(nil)
 
-	return i.SetupRoute()
+	return i.SetupRoute(conf)
 }
 
 func (i *Implement) Start() error {
+	i.serve.Handler = i.route
 	return i.serve.ListenAndServe()
 }
 

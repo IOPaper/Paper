@@ -5,4 +5,5 @@ type Engine interface {
 	GetAttachmentPath(key string) (string, error)
 	GetOnePaper(key string) (*Paper, error)
 	GetPaperList(before, limit int) (*PaperList, error)
+	CheckPaperIndexStatus(index string) bool
 }
