@@ -3,16 +3,24 @@ package fs
 import (
 	"context"
 	"github.com/IOPaper/Paper/paper/engine"
+	"github.com/IOPaper/Paper/paper/id"
+	"github.com/pkg/errors"
+	"time"
 )
 
 type Engine struct {
 	FileApi
-	ctx   context.Context
-	root  string
-	index PaperIndexActions
+	ctx    context.Context
+	root   string
+	index  PaperIndexActions
+	worker *id.Worker
 }
 
 func NewEngine(ctx context.Context, root string) (engine.Engine, error) {
+	worker, err := id.NewWorker(1)
+	if err != nil {
+		return nil, errors.Wrap(err, "init snowflake worker failed")
+	}
 	fApi := NewFileApi(root)
 	if err := fApi.Init(); err != nil {
 		return nil, err
@@ -26,6 +34,7 @@ func NewEngine(ctx context.Context, root string) (engine.Engine, error) {
 		ctx:     ctx,
 		root:    root,
 		index:   index,
+		worker:  worker,
 	}, nil
 }
 
@@ -71,7 +80,27 @@ func (e *Engine) GetPaperList(before, limit int) (*engine.PaperList, error) {
 	return &list, nil
 }
 
-func (e *Engine) AddOnePaper(index string, paperDTO *engine.PaperDTO) error {
-
-	return nil
+func (e *Engine) AddOnePaper(index string, verify bool, paperDTO *engine.PaperDTO) error {
+	if e.CheckPaperIndexStatus(index) {
+		return errors.New("paper index already exists")
+	}
+	id := e.worker.GetId()
+	if err := e.AddPaper(index, &engine.Paper{
+		Id:          id,
+		Title:       paperDTO.Title,
+		Body:        paperDTO.Body,
+		Tags:        paperDTO.Tags,
+		Attachment:  paperDTO.Attachment,
+		Author:      paperDTO.Author,
+		Sign:        paperDTO.Sign,
+		Verify:      verify,
+		DateCreated: time.Now(),
+	}); err != nil {
+		return err
+	}
+	defer e.index.Write()
+	return e.index.Add(index, &PaperIndexMetadata{
+		Id:         id,
+		CreateDate: time.Now(),
+	})
 }
