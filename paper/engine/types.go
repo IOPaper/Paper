@@ -2,6 +2,7 @@ package engine
 
 import "time"
 
+// Paper [data entity]
 type Paper struct {
 	Id int64 `msgpack:"id" json:"id" toml:"id"`
 	// the Title of the Paper, it can be anything as long as it is a string
@@ -25,4 +26,9 @@ type Paper struct {
 type PaperStore struct {
 	Index string
 	Paper *Paper
+}
+
+type PaperList struct {
+	Len    int          `json:"len" msgpack:"len"`
+	Papers []PaperStore `json:"papers,omitempty" msgpack:"papers,omitempty"`
 }
