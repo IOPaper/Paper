@@ -32,11 +32,7 @@ func (i *Implement) SetupRoute(conf *config.Config) error {
 		return err
 	}
 
-	rPublic := i.route.Group("/public")
-	{
-		implKeys := impls.NewImplKeys(keypair)
-		rPublic.GET("/key", implKeys.Public)
-	}
+	i.route.GET("/public_key", impls.NewImplKeys(keypair).Public)
 
 	rPaper := i.route.Group("/x")
 	{
@@ -50,6 +46,7 @@ func (i *Implement) SetupRoute(conf *config.Config) error {
 			rDeep.GET("/", implPaper.GetPaper)
 			rDeep.GET("/status", implPaper.GetPaperIndexStatus)
 		}
+
 	}
 
 	rAdmin := i.route.Group("/m")

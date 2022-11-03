@@ -26,6 +26,8 @@ type FileApi interface {
 
 	CheckPaperIndexStatus(index string) bool
 	OpenPaperWithIndex(index string) (FileIndexApi, error)
+	AddPaper(index string, paper *engine.Paper) error
+	AddAttachment(key string, r io.Reader) error
 
 	GetAttachmentPath(key string) (string, error)
 	GetAttachment(key string) (io.Reader, error)
@@ -101,6 +103,15 @@ func (f *fileApi) OpenPaperWithIndex(index string) (FileIndexApi, error) {
 	return &fileApi{root: indexPath}, nil
 }
 
+func (f *fileApi) AddPaper(index string, paper *engine.Paper) error {
+	indexPath := f.withRootPath(DOCRepo + index)
+	if utils.IsExist(indexPath) {
+		return errors.New("paper index already exists")
+	}
+	api := &fileApi{root: indexPath}
+	return api.writeDOC(paper)
+}
+
 // GetAttachmentPath [RAW API]
 func (f *fileApi) GetAttachmentPath(key string) (string, error) {
 	attachmentPath := f.withRootPath(AttachmentRepo + key)
@@ -136,6 +147,19 @@ func (f *fileApi) OpenAttachment(key string) (*os.File, error) {
 	return file, nil
 }
 
+func (f *fileApi) AddAttachment(key string, r io.Reader) error {
+	attachmentPath := f.withRootPath(AttachmentRepo + key)
+	if utils.IsExist(attachmentPath) {
+		return nil
+	}
+	fs, err := utils.MustOpen(attachmentPath)
+	if err != nil {
+		return errors.Wrap(err, "can't open attachment")
+	}
+	io.Copy(fs, r)
+	return nil
+}
+
 // OpenDOC [RAW API]
 func (f *fileApi) OpenDOC() (*engine.Paper, error) {
 	docPath := f.withRootPath(DOCName)
@@ -151,4 +175,16 @@ func (f *fileApi) OpenDOC() (*engine.Paper, error) {
 		return nil, errors.Wrap(err, "can't parse this doc")
 	}
 	return &paper, nil
+}
+
+func (f *fileApi) writeDOC(paper *engine.Paper) error {
+	docPath := f.withRootPath(DOCName)
+	buf := bytes.Buffer{}
+	if err := jsoniter.NewEncoder(&buf).Encode(paper); err != nil {
+		return errors.Wrap(err, "can't encode this doc")
+	}
+	if err := utils.Write(docPath, &buf); err != nil {
+		return errors.Wrap(err, "can't write this doc")
+	}
+	return nil
 }

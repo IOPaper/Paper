@@ -35,6 +35,7 @@ type PaperDTO struct {
 	Tags       []string          `json:"tags"`
 	Attachment []PaperAttachment `json:"attachment,omitempty"`
 	Author     string            `json:"author"`
+	Sign       []byte            `json:"sign"`
 }
 
 type PaperStore struct {
