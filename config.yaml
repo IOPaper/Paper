@@ -5,10 +5,13 @@ http:
 security:
     secret: "YOUR_SECRET"
     secp256k1:
-        public: "./pubkey"
         private: "./prikey"
 
 paper-engine:
     engine: "fs"
+    # max attachment size
+    # unit of measurement: bits
+    # example 134217728 = 128MB
+    max-attachment-size: 134217728
     fs:
         repo: "paper.repo/"

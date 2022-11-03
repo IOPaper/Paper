@@ -17,7 +17,6 @@ type Http struct {
 }
 
 type SecuritySecp256k1 struct {
-	PublicKey  string `yaml:"public"`
 	PrivateKey string `yaml:"private"`
 }
 
@@ -31,8 +30,9 @@ type PaperEngineFs struct {
 }
 
 type PaperEngine struct {
-	Engine PaperEngineType `yaml:"engine"`
-	Fs     PaperEngineFs   `yaml:"fs,omitempty"`
+	Engine            PaperEngineType `yaml:"engine"`
+	MaxAttachmentSize int64           `yaml:"max-attachment-size"`
+	Fs                PaperEngineFs   `yaml:"fs,omitempty"`
 }
 
 type Config struct {

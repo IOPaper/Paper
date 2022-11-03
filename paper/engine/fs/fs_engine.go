@@ -80,26 +80,26 @@ func (e *Engine) GetPaperList(before, limit int) (*engine.PaperList, error) {
 	return &list, nil
 }
 
-func (e *Engine) AddOnePaper(index string, verify bool, paperDTO *engine.PaperDTO) error {
-	if e.CheckPaperIndexStatus(index) {
+func (e *Engine) AddOnePaper(verify bool, dto *engine.PaperDTO) error {
+	if e.CheckPaperIndexStatus(dto.Index) {
 		return errors.New("paper index already exists")
 	}
 	id := e.worker.GetId()
-	if err := e.AddPaper(index, &engine.Paper{
+	if err := e.AddPaper(dto.Index, &engine.Paper{
 		Id:          id,
-		Title:       paperDTO.Title,
-		Body:        paperDTO.Body,
-		Tags:        paperDTO.Tags,
-		Attachment:  paperDTO.Attachment,
-		Author:      paperDTO.Author,
-		Sign:        paperDTO.Sign,
+		Title:       dto.Title,
+		Body:        dto.Body,
+		Tags:        dto.Tags,
+		Attachment:  dto.Attachment,
+		Author:      dto.Author,
+		Sign:        dto.Sign,
 		Verify:      verify,
 		DateCreated: time.Now(),
 	}); err != nil {
 		return err
 	}
 	defer e.index.Write()
-	return e.index.Add(index, &PaperIndexMetadata{
+	return e.index.Add(dto.Index, &PaperIndexMetadata{
 		Id:         id,
 		CreateDate: time.Now(),
 	})

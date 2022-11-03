@@ -3,6 +3,7 @@ package app
 import (
 	"context"
 	"github.com/IOPaper/Paper/app/impls"
+	"github.com/IOPaper/Paper/app/middleware"
 	"github.com/IOPaper/Paper/config"
 	"github.com/IOPaper/Paper/crypto"
 	"github.com/IOPaper/Paper/paper"
@@ -23,10 +24,12 @@ func NewService(ctx *context.Context) pkgCtl.Handler {
 }
 
 func (i *Implement) SetupRoute(conf *config.Config) error {
+
 	engine, err := paper.New(i.ctx, conf)
 	if err != nil {
 		return err
 	}
+
 	keypair, err := crypto.LoadSecp256k1FromPath(conf.Security.Secp256k1.PrivateKey)
 	if err != nil {
 		return err
@@ -38,29 +41,48 @@ func (i *Implement) SetupRoute(conf *config.Config) error {
 	{
 
 		implPaper := impls.NewImplPaper(engine)
+
 		rPaper.GET("/list", implPaper.GetList)
 
 		rDeep := rPaper.Group("/:index")
 		{
+
 			rDeep.GET("/file/:attachment", implPaper.GetAttachment)
+
 			rDeep.GET("/", implPaper.GetPaper)
-			rDeep.GET("/status", implPaper.GetPaperIndexStatus)
+
 		}
 
 	}
 
 	rAdmin := i.route.Group("/m")
 	{
-		implWriting := impls.NewImplWriting(engine, keypair, conf.Security.Secret)
+
+		rAdmin.Use(middleware.AdminAuth(conf.Security.Secret))
+
+		implWriting := impls.NewImplWriting(engine, keypair, conf.Security.Secret, conf.PaperEngine.MaxAttachmentSize)
+
 		rAdmin.POST("/add_paper", implWriting.AddPaper)
+
+		rDeep := rAdmin.Group("/:index")
+		{
+
+			rDeep.PUT("/file/:attachment")
+
+			rDeep.GET("/status", implWriting.GetPaperIndexStatus)
+
+		}
+
 	}
 
 	return nil
+
 }
 
 func (i *Implement) Create() error {
 
 	conf, err := config.Assert(i.ctx)
+
 	if err != nil {
 		return errors.Wrap(err, "app.impl")
 	}

@@ -103,6 +103,7 @@ func (f *fileApi) OpenPaperWithIndex(index string) (FileIndexApi, error) {
 	return &fileApi{root: indexPath}, nil
 }
 
+// AddPaper [RAW API]
 func (f *fileApi) AddPaper(index string, paper *engine.Paper) error {
 	indexPath := f.withRootPath(DOCRepo + index)
 	if utils.IsExist(indexPath) {
