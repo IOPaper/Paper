@@ -8,6 +8,6 @@ type Engine interface {
 	GetOnePaper(key string) (*Paper, error)
 	GetPaperList(before, limit int) (*PaperList, error)
 	CheckPaperIndexStatus(index string) bool
-	AddOnePaper(index string, verify bool, paperDTO *PaperDTO) error
+	AddOnePaper(verify bool, paperDTO *PaperDTO) error
 	AddAttachment(key string, r io.Reader) error
 }

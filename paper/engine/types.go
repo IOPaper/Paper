@@ -30,6 +30,7 @@ type Paper struct {
 
 // PaperDTO [data transport object]
 type PaperDTO struct {
+	Index      string            `json:"index"`
 	Title      string            `json:"title"`
 	Body       string            `json:"body"`
 	Tags       []string          `json:"tags"`
