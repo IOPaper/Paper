@@ -31,9 +31,10 @@ func main() {
 	pri, pub := secp256k1.ExportKeypair()
 	fmt.Println("===================================================")
 	fmt.Printf(
-		"private key fingerprint: %s\npublic key fingerprint: %s\n",
+		"private key fingerprint: %s\npublic key fingerprint: %s\nprivate key: %x\n",
 		crypto.NewFingerprint(bytes.NewBuffer(pri)).Hex(),
 		crypto.NewFingerprint(bytes.NewBuffer(pub)).Hex(),
+		pri,
 	)
 	fmt.Println("===================================================")
 	if err = utils.Write(output+"/pubkey", bytes.NewBuffer(pub)); err != nil {
